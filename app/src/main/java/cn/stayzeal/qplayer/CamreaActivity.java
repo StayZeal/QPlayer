@@ -1,9 +1,10 @@
 package cn.stayzeal.qplayer;
 
-import android.graphics.Canvas;
+import android.content.Context;
+import android.content.res.Configuration;
+import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import butterknife.BindView;
@@ -14,7 +15,8 @@ public class CamreaActivity extends AppCompatActivity {
     @BindView(R.id.preview_sv)
     SurfaceView previewSv;
 
-    SurfaceHolder surfaceHolder;
+    Camera mCamera;
+    private Camera.Parameters parameters;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,34 +25,33 @@ public class CamreaActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
 
-        surfaceHolder = previewSv.getHolder();
-
-
-        surfaceHolder.addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-
-            }
-        });
-
-        test();
     }
 
     private void test() {
-        Canvas canvas = surfaceHolder.lockCanvas();
 
+        int cameras = Camera.getNumberOfCameras();
 
-        surfaceHolder.unlockCanvasAndPost(canvas);
+        parameters = mCamera.getParameters();
+        mCamera.setParameters(parameters);
 
     }
+
+    public static Camera openCamera(int cameraId) {
+        try {
+            return Camera.open(cameraId);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static void followScreenOrientation(Context context, Camera camera){
+        final int orientation = context.getResources().getConfiguration().orientation;
+        if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            camera.setDisplayOrientation(180);
+        }else if(orientation == Configuration.ORIENTATION_PORTRAIT) {
+            camera.setDisplayOrientation(90);
+        }
+    }
+
+
 }
